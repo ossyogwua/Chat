@@ -5,6 +5,7 @@ import Chat from "./components/Chat";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { StyleSheet } from "react-native";
+import { useEffect } from "react";
 
 // Create the navigator
 const Stack = createNativeStackNavigator();
