@@ -6,65 +6,78 @@ import {
   Text,
   KeyboardAvoidingView,
   Platform,
+  TouchableOpacity,
+  Alert,
 } from "react-native";
+import {
+  collection,
+  getDocs,
+  addDoconSnapshot,
+  query,
+  getFirestore,
+  orderBy,
+  onSnapshot,
+  listsDocuments,
+} from "firebase/firestore";
 
-const Chat = ({ route, navigation }) => {
+const Chat = ({ route, navigation, storage }) => {
   const [messages, setMessages] = useState([]);
-  const { name, background, id } = route.params;
+  const { name, background, userID } = route.params;
+  const db = getFirestore();
+  const colRef = collection(db, "messages");
+
   const onSend = (newMessages) => {
-    setMessages((previousMessages) =>
-      GiftedChat.append(previousMessages, newMessages)
-    );
+    getDocs(collection(db, "messages"), newMessages[0]);
   };
-  useEffect(() => {
-    setMessages([
-      {
-        _id: 1,
-        text: "Hello developer",
-        createdAt: new Date(),
-        user: {
-          _id: 2,
-          name: "React Native",
-          avatar: "https://placeimg.com/140/140/any",
-          //system: true,
-        },
-      },
-      {
-        _id: 2,
-        text: "This is a system message",
-        createdAt: new Date(),
-        system: true,
-      },
-    ]);
-  }, []);
+
+  const addMessage = async (newMessage) => {
+    const newMessagetRef = await addDoc(collection(db, "messages"), newMessage);
+    if (newMessagetRef.id) {
+      setMessages([newMessage, ...messages]);
+      Alert.alert(`The message "${messageName}" has been added.`);
+    } else {
+      Alert.alert("Unable to add. Please try later");
+    }
+    const listsDocuments = await getDocs(collection(db, "messages"));
+    let newMessages = [];
+    listsDocuments.forEach((docObject) => {
+      newLists.push({ id: docObject.id, ...docObject.data() });
+    });
+  };
 
   useEffect(() => {
     navigation.setOptions({ title: name });
   }, []);
+  // Messages database
+  let unsubMessages;
+  useEffect(() => {
+    if (unsubMessages) unsubMessages();
+    unsubMessages = null;
+    {
+      const q = query(collection(db, "messages"), orderBy("createdAt", "desc"));
+      unsubMessages = onSnapshot(q, (documentSnapshot) => {
+        let newMessages = [];
+        documentSnapshot.forEach((doc) => {
+          newMessages.push({
+            id: doc.id,
+            ...doc.data(),
+            createdAt: new Date(doc.data().createdAt.toMillis()),
+          });
+        });
 
-  return (
-    <View style={styles.container}>
-      <GiftedChat
-        messages={messages}
-        renderBubble={renderBubble}
-        onSend={(messages) => onSend(messages)}
-        user={{
-          _id: 1,
-          name,
-        }}
-      />
-      {/* keyboard adjustement to avoid input overlap  */}
-      {Platform.OS === "android" ? (
-        <KeyboardAvoidingView behavior="height" />
-      ) : null}
-      {Platform.OS === "ios" ? (
-        <KeyboardAvoidingView behavior="padding" />
-      ) : null}
-    </View>
-  );
+        setMessages(newMessages);
+      });
+    }
+
+    // Clean up code
+    return () => {
+      if (unsubMessages) unsubMessages();
+    };
+  }, []);
 
   // for customazing your messages
   const renderBubble = (props) => {
+    return;
     <Bubble
       {...props}
       wrapperStyle={{
@@ -77,22 +90,31 @@ const Chat = ({ route, navigation }) => {
       }}
     />;
   };
+
+  return (
+    <View style={[styles.container, { backgroundColor: background }]}>
+      <GiftedChat
+        messages={messages}
+        renderBubble={renderBubble}
+        onSend={(messages) => onSend(messages)}
+        user={{
+          _id: userID,
+          name,
+        }}
+      />
+      {Platform.OS === "android" ? (
+        <KeyboardAvoidingView behavior="height" />
+      ) : null}
+      {Platform.OS === "ios" ? (
+        <KeyboardAvoidingView behavior="padding" />
+      ) : null}
+    </View>
+  );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  text: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "white",
-  },
-  name: {
-    marginTop: 20,
-    fontSize: 16,
-    color: "white",
-  },
 });
-
 export default Chat;
