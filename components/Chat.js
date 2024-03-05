@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Bubble, GiftedChat } from "react-native-gifted-chat";
+import { Bubble, GiftedChat, InputToolbar } from "react-native-gifted-chat";
 import {
   StyleSheet,
   View,
@@ -107,6 +107,11 @@ const Chat = ({ route, navigation, db, storage, isConnected }) => {
         }}
       />
     );
+  };
+
+  const renderInputToolbar = (props) => {
+    if (isConnected === true) return <InputToolbar {...props} />;
+    else return null;
   };
 
   return (
