@@ -28,12 +28,13 @@ const Start = ({ navigation }) => {
       .then((result) => {
         navigation.navigate("Chat", {
           name: name,
-          background: background,
+          backgroundColor: selectedColor,
           id: result.user.uid,
         });
         Alert.alert("Signed in Successfully!");
       })
       .catch((error) => {
+        console.log(error);
         Alert.alert("Unable to sign in, try later again.");
       });
   };
@@ -96,11 +97,7 @@ const Start = ({ navigation }) => {
             />
           </View>
 
-          <Button
-            title="Start Chatting"
-            onPress={() => navigation.navigate("Chat", { name: name })}
-            color="#757083"
-          />
+          <Button title="Start Chatting" onPress={signInUser} color="#757083" />
         </View>
       </ImageBackground>
     </View>
