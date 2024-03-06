@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import CustomActions from "./CustomActions";
 import { Bubble, GiftedChat, InputToolbar } from "react-native-gifted-chat";
 import {
   StyleSheet,
@@ -17,6 +18,7 @@ import {
   query,
 } from "firebase/firestore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import MapView from "react-native-maps";
 
 const Chat = ({ route, navigation, db, storage, isConnected }) => {
   const [messages, setMessages] = useState([]);
@@ -114,12 +116,37 @@ const Chat = ({ route, navigation, db, storage, isConnected }) => {
     else return null;
   };
 
+  const renderCustomActions = (props) => {
+    return <CustomActions storage={storage} {...props} />;
+  };
+
+  const renderCustomView = (props) => {
+    const { currentMessage } = props;
+    if (currentMessage.location) {
+      return (
+        <MapView
+          style={{ width: 150, height: 100, borderRadius: 13, margin: 3 }}
+          region={{
+            latitude: currentMessage.location.latitude,
+            longitude: currentMessage.location.longitude,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421,
+          }}
+        />
+      );
+    }
+    return null;
+  };
+
   return (
     <View style={[styles.container, { backgroundColor: background }]}>
       <GiftedChat
         messages={messages}
         renderBubble={renderBubble}
+        renderInputToolbar={renderInputToolbar}
         onSend={(messages) => onSend(messages)}
+        renderActions={renderCustomActions}
+        renderCustomView={renderCustomView}
         user={{
           _id: userID,
           name,
@@ -138,5 +165,16 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  text: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "white",
+  },
+  name: {
+    marginTop: 20,
+    fontSize: 16,
+    color: "white",
+  },
 });
+
 export default Chat;
