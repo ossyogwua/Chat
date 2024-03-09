@@ -1,8 +1,8 @@
-Objective
+# Objective
 
 To build a chat app for mobile devices using React Native. The app will provide users with a chat interface and options to share images and their location.
 
-The 5 Ws
+## The 5 Ws
 
 Who—The users of the mobile chat app. These could be friends, family or other students on this course. Your codebase will be used by other developers working on the product.
 
@@ -28,8 +28,13 @@ As a user, I want to be able to read my messages offline so I can reread convers
 
 As a user with a visual impairment, I want to use a chat app that is compatible with a screen reader so that I can engage with a chat interface.
 
-Key Features A page where users can enter their name and choose a background color for the chat screen before joining the chat. A page displaying the conversation, as well as an input field and submit button. The chat  provides users with two additional communication features: sending images and location data. Data gets stored online and offline.
-Technical Requirements: 
+## Key Features
+- A page where users can enter their name and choose a background color for the chat screen before joining the chat.
+- A page displaying the conversation, as well as an input field and submit button.
+- The chat  provides users with two additional communication features: sending images and location data.
+-  Data gets stored online and offline.
+  
+## Technical Requirements: 
 The is written in React Native and developed using Expo. 
 The app is styled according to the given screen design. 
 Chat conversations is stored in Google Firestore Database. 
